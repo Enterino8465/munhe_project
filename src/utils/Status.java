@@ -7,10 +7,9 @@ public enum Status {
     NO_INPUT("NO Input Provided"),
     INVALID_RANGE("Invalid range");
 
-
     private final String description;
 
-    private Status(String description) {
+    Status(String description) {
         this.description = description;
     }
 

@@ -30,38 +30,17 @@ public class MichalHazan_MichaelKuksov {
             scanner.nextLine(); // Consume newline
 
             switch (choice) {
-                case 0:
-                    exit = true;
-                    break;
-                case 1:
-                    addSeller(system, scanner);
-                    break;
-                case 2:
-                    addBuyer(system, scanner);
-                    break;
-                case 3:
-                    addProductToSeller(system, scanner);
-                    break;
-                case 4:
-                    addProductToBuyer(system, scanner);
-                    break;
-                case 5:
-                    payForBuyerCart(system, scanner);
-                    break;
-                case 6:
-                    displayAllBuyers(system);
-                    break;
-                case 7:
-                    displayAllSellers(system);
-                    break;
-                case 8:
-                    displayProductsByCategory(system, scanner);
-                    break;
-                case 9:
-                    createNewCartFromHistory(system, scanner);
-                    break;
-                default:
-                    System.out.println("Invalid option. Please try again.");
+                case 0 -> exit = true;
+                case 1 -> addSeller(system, scanner);
+                case 2 -> addBuyer(system, scanner);
+                case 3 -> addProductToSeller(system, scanner);
+                case 4 -> addProductToBuyer(system, scanner);
+                case 5 -> payForBuyerCart(system, scanner);
+                case 6 -> displayAllBuyers(system);
+                case 7 -> displayAllSellers(system);
+                case 8 -> displayProductsByCategory(system, scanner);
+                case 9 -> createNewCartFromHistory(system, scanner);
+                default -> System.out.println("Invalid option. Please try again.");
             }
         }
         scanner.close(); // Close the scanner
@@ -80,7 +59,7 @@ public class MichalHazan_MichaelKuksov {
 
 // Utility method to get valid integer input
     private static int getValidIntInput(Scanner scanner) {
-        Status status = Status.SUCCESS;
+        Status status;
         Manage manage = new Manage();
         do {
             System.out.println("Enter number: ");
@@ -95,7 +74,7 @@ public class MichalHazan_MichaelKuksov {
     }
     // Utility method to get valid double input
     private static double getValidDoubleInput(Scanner scanner) {
-        Status status = Status.SUCCESS;
+        Status status;
         Manage manage = new Manage();
         do {
             System.out.println("Enter number: ");
