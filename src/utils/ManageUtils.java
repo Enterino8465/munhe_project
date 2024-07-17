@@ -1,7 +1,5 @@
 package src.utils;
 
-
-
 public class ManageUtils {
     public static Status validInteger(String num){
         if (num.isEmpty()){

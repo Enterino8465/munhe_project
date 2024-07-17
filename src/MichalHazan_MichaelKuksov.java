@@ -27,7 +27,6 @@ public class MichalHazan_MichaelKuksov {
             System.out.print("Choose an option: ");
 
             int choice = getValidIntInput(scanner);
-            scanner.nextLine(); // Consume newline
 
             switch (choice) {
                 case 0 -> exit = true;
@@ -59,6 +58,7 @@ public class MichalHazan_MichaelKuksov {
 
 // Utility method to get valid integer input
     private static int getValidIntInput(Scanner scanner) {
+        System.out.println("hello");
         Status status;
         Manage manage = new Manage();
         do {
@@ -126,11 +126,11 @@ public class MichalHazan_MichaelKuksov {
         String streetName = scanner.nextLine();
         System.out.print("Enter building number: ");
         int buildingNumber = getValidIntInput(scanner);
-        scanner.nextLine(); // Consume newline
         System.out.print("Enter city: ");
         String city = scanner.nextLine();
         System.out.print("Enter country: ");
         String country = scanner.nextLine();
+
 
         if (system.addBuyer(buyerName, buyerPassword, streetName, buildingNumber, city, country)) {
             System.out.println("Buyer added.");
@@ -146,7 +146,6 @@ public class MichalHazan_MichaelKuksov {
         System.out.println(system.generateStrSellersList());
         System.out.println("Enter number of seller: ");
         int indexSeller = getValidIntInput(scanner) -1;
-        scanner.nextLine();
         if (indexSeller >= 0 && !system.isSellerByIndexExists(indexSeller)) {
             System.out.println("Invalid index. Please try again.");
             return;
@@ -188,7 +187,6 @@ public class MichalHazan_MichaelKuksov {
         System.out.println(system.generateStrBuyersList());
         System.out.println("Enter number of buyer: ");
         int indexBuyer = getValidIntInput(scanner) -1;
-        scanner.nextLine();
         if (!system.isBuyerByIndexExists(indexBuyer)) {
             System.out.println("Invalid index. Please try again.");
             return;
@@ -197,7 +195,6 @@ public class MichalHazan_MichaelKuksov {
         System.out.println(system.generateStrSellersList());
         System.out.println("Enter number of seller: ");
         int indexSeller = getValidIntInput(scanner) -1;
-        scanner.nextLine();
         if (!system.isSellerByIndexExists(indexSeller)) {
             System.out.println("Invalid index. Please try again.");
             return;
@@ -210,7 +207,6 @@ public class MichalHazan_MichaelKuksov {
         System.out.println(system.generateStrSellersProducts(indexSeller));
         System.out.println("Enter number of product: ");
         int indexItem = getValidIntInput(scanner) -1;
-        scanner.nextLine();
         if (!system.isSellerHasProductByIndex(indexSeller , indexItem)) {
             System.out.println("Invalid index. Please try again later.");
             return;
@@ -236,7 +232,6 @@ public class MichalHazan_MichaelKuksov {
         System.out.println(system.generateStrBuyersList());
         System.out.println("Enter number of buyer: ");
         int indexBuyer = getValidIntInput(scanner) -1;
-        scanner.nextLine();
         if (!system.isBuyerByIndexExists(indexBuyer)) {
             System.out.println("Invalid index. Please try again.");
             return;
@@ -287,7 +282,6 @@ public class MichalHazan_MichaelKuksov {
 
         System.out.print("Choose a buyer by number: ");
         int buyerIndex = getValidIntInput(scanner) - 1;
-        scanner.nextLine(); // Consume newline
 
         if (system.getBuyerOrderCount(buyerIndex) == 0) {
             System.out.println("The selected buyer has no order history. Operation canceled.");
@@ -311,7 +305,6 @@ public class MichalHazan_MichaelKuksov {
 
         System.out.print("Choose a cart from history by number: ");
         int cartIndex = getValidIntInput(scanner) - 1;
-        scanner.nextLine(); // Consume newline
         // Set the chosen cart from history as the current cart
         if (system.setBuyerCurrentCartFromHistory(buyerIndex, cartIndex)) {
             System.out.println("The cart has been successfully set as the current cart.");

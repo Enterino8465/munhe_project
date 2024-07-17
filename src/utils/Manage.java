@@ -1,7 +1,7 @@
 package src.utils;
 
 public class Manage {
-    private int num;
+    private int num;//no handeling double
 
     public int getNum() {
         return num;
