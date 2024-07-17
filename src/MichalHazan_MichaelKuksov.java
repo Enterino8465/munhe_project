@@ -70,7 +70,7 @@ public class MichalHazan_MichaelKuksov {
                 scanner.nextLine();
             }
         }while (!status.equals(Status.SUCCESS));
-        return manage.getNum();
+        return manage.getNumInt();
     }
     // Utility method to get valid double input
     private static double getValidDoubleInput(Scanner scanner) {
@@ -85,7 +85,7 @@ public class MichalHazan_MichaelKuksov {
                 scanner.nextLine();
             }
         }while (!status.equals(Status.SUCCESS));
-        return manage.getNum();
+        return manage.getNumDouble();
     }
     //--------case 1: Add Seller--------------
     private static void addSeller(MarketSystem system, Scanner scanner) {
