@@ -3,6 +3,10 @@ package src.utils;
 public class Manage {
     private int num;
 
+    public int getNum() {
+        return num;
+    }
+
     public Status setInt(String numStr){
         Status status = ManageUtils.validInteger(numStr);
         if (status.equals(Status.SUCCESS)){

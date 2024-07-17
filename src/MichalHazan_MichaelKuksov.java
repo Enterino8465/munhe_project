@@ -1,6 +1,8 @@
 package src;
 
 import src.utils.Category;
+import src.utils.Manage;
+import src.utils.Status;
 
 import java.util.Scanner;
 
@@ -8,6 +10,7 @@ public class MichalHazan_MichaelKuksov {
     public static void main(String[] args) {
         MarketSystem system = new MarketSystem("M&M market");
         Scanner scanner = new Scanner(System.in);
+
         boolean exit = false;
         while (!exit) {
             System.out.println("Menu:");
@@ -22,6 +25,7 @@ public class MichalHazan_MichaelKuksov {
             System.out.println("8. Display All Products from a Category");
             System.out.println("9. Create a New Cart from Buyer's Cart History");
             System.out.print("Choose an option: ");
+
             int choice = getValidIntInput(scanner);
             scanner.nextLine(); // Consume newline
 
@@ -62,21 +66,47 @@ public class MichalHazan_MichaelKuksov {
         }
         scanner.close(); // Close the scanner
     }
-    // Utility method to get valid integer input
+
+
+
+//    private static int getValidIntInput(Scanner scanner) {
+//        while (!scanner.hasNextInt()) {
+//            System.out.println("Invalid input. Please enter a number.");
+//            scanner.next(); // Consume invalid input
+//        }
+//        return scanner.nextInt();
+//    }
+
+
+// Utility method to get valid integer input
     private static int getValidIntInput(Scanner scanner) {
-        while (!scanner.hasNextInt()) {
-            System.out.println("Invalid input. Please enter a number.");
-            scanner.next(); // Consume invalid input
-        }
-        return scanner.nextInt();
+        Status status = Status.SUCCESS;
+        Manage manage = new Manage();
+        do {
+            System.out.println("Enter number: ");
+            String num = scanner.nextLine();
+            status = manage.setInt(num);
+            if (!status.equals(Status.SUCCESS)){
+                System.out.println(status.getDescription());
+                scanner.nextLine();
+            }
+        }while (!status.equals(Status.SUCCESS));
+        return manage.getNum();
     }
     // Utility method to get valid double input
     private static double getValidDoubleInput(Scanner scanner) {
-        while (!scanner.hasNextDouble()) {
-            System.out.println("Invalid input. Please enter a number.");
-            scanner.next(); // Consume invalid input
-        }
-        return scanner.nextDouble();
+        Status status = Status.SUCCESS;
+        Manage manage = new Manage();
+        do {
+            System.out.println("Enter number: ");
+            String num = scanner.nextLine();
+            status = manage.setDouble(num);
+            if (!status.equals(Status.SUCCESS)){
+                System.out.println(status.getDescription());
+                scanner.nextLine();
+            }
+        }while (!status.equals(Status.SUCCESS));
+        return manage.getNum();
     }
     //--------case 1: Add Seller--------------
     private static void addSeller(MarketSystem system, Scanner scanner) {
