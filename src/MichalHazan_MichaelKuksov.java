@@ -45,29 +45,16 @@ public class MichalHazan_MichaelKuksov {
         scanner.close(); // Close the scanner
     }
 
-
-
-//    private static int getValidIntInput(Scanner scanner) {
-//        while (!scanner.hasNextInt()) {
-//            System.out.println("Invalid input. Please enter a number.");
-//            scanner.next(); // Consume invalid input
-//        }
-//        return scanner.nextInt();
-//    }
-
-
 // Utility method to get valid integer input
     private static int getValidIntInput(Scanner scanner) {
-        System.out.println("hello");
         Status status;
         Manage manage = new Manage();
         do {
-            System.out.println("Enter number: ");
+            System.out.println("Enter a number: ");
             String num = scanner.nextLine();
             status = manage.setInt(num);
             if (!status.equals(Status.SUCCESS)){
                 System.out.println(status.getDescription());
-                scanner.nextLine();
             }
         }while (!status.equals(Status.SUCCESS));
         return manage.getNumInt();
@@ -82,10 +69,34 @@ public class MichalHazan_MichaelKuksov {
             status = manage.setDouble(num);
             if (!status.equals(Status.SUCCESS)){
                 System.out.println(status.getDescription());
-                scanner.nextLine();
             }
         }while (!status.equals(Status.SUCCESS));
         return manage.getNumDouble();
+    }
+    // Utility method to get valid double input
+    private static String getValidStringInput(Scanner scanner){
+        Status status;
+        Manage manage = new Manage();
+        do{
+            String str = scanner.nextLine();
+            status = manage.setString(str);
+            if (!status.equals(Status.SUCCESS)){
+                System.out.println(status.getDescription());
+            }
+        }while (!status.equals(Status.SUCCESS));
+        return manage.getStr();
+    }
+    private static Category getValidCategory(Scanner scanner){
+        Status status;
+        Manage manage = new Manage();
+        do{
+            String category = scanner.nextLine();
+            status = manage.setCategory(category);
+            if (!status.equals(Status.SUCCESS)){
+                System.out.println(status.getDescription());
+            }
+        }while (!status.equals(Status.SUCCESS));
+        return manage.getCategory();
     }
     //--------case 1: Add Seller--------------
     private static void addSeller(MarketSystem system, Scanner scanner) {
@@ -93,7 +104,7 @@ public class MichalHazan_MichaelKuksov {
 
         while (true) {
             System.out.print("Enter seller name: ");
-            sellerName = scanner.nextLine();
+            sellerName = getValidStringInput(scanner);
             if (!system.isUsernameTaken(sellerName)) {
                 break;
             }
@@ -101,7 +112,7 @@ public class MichalHazan_MichaelKuksov {
         }
 
         System.out.print("Enter seller password: ");
-        String sellerPassword = scanner.nextLine();
+        String sellerPassword = getValidStringInput(scanner);
 
         if (system.addSeller(sellerName, sellerPassword)) {
             System.out.println("Seller added.");
@@ -113,7 +124,7 @@ public class MichalHazan_MichaelKuksov {
 
         while (true) {
             System.out.print("Enter buyer name: ");
-            buyerName = scanner.nextLine();
+            buyerName = getValidStringInput(scanner);
             if (!system.isUsernameTaken(buyerName)) {
                 break;
             }
@@ -121,16 +132,15 @@ public class MichalHazan_MichaelKuksov {
         }
 
         System.out.print("Enter buyer password: ");
-        String buyerPassword = scanner.nextLine();
+        String buyerPassword = getValidStringInput(scanner);
         System.out.print("Enter street name: ");
-        String streetName = scanner.nextLine();
+        String streetName = getValidStringInput(scanner);
         System.out.print("Enter building number: ");
         int buildingNumber = getValidIntInput(scanner);
         System.out.print("Enter city: ");
-        String city = scanner.nextLine();
+        String city = getValidStringInput(scanner);
         System.out.print("Enter country: ");
-        String country = scanner.nextLine();
-
+        String country = getValidStringInput(scanner);
 
         if (system.addBuyer(buyerName, buyerPassword, streetName, buildingNumber, city, country)) {
             System.out.println("Buyer added.");
@@ -151,17 +161,17 @@ public class MichalHazan_MichaelKuksov {
             return;
         }
         System.out.println("Enter Product Name: ");
-        String productName = scanner.nextLine();
+        String productName = getValidStringInput(scanner);
         while (system.isProductNameExists(indexSeller, productName)) {
             System.out.println("Product name is taken, please choose another one: ");
-            productName = scanner.nextLine();
+            productName = getValidStringInput(scanner);
         }
         System.out.println("Enter product price: ");
         double productPrice = getValidDoubleInput(scanner);
         System.out.println("Select Category:");
-        Category category = getCategory(scanner);
+        Category category = getCategory(scanner); //todo
         System.out.print("Is this a special package? (yes/no): ");
-        String isSpecialPackageInput = scanner.nextLine();
+        String isSpecialPackageInput = scanner.nextLine();//todo
         boolean isSpecialPackage = isSpecialPackageInput.equalsIgnoreCase("yes");
         if (isSpecialPackage) {
             System.out.println("Enter special package price: ");
@@ -318,13 +328,13 @@ public class MichalHazan_MichaelKuksov {
 
     public static Category getCategory(Scanner scanner) {
         System.out.println("Enter product category:");
-        for (Category cat : Category.values()) {
-            System.out.println("- " + cat);
+        for (Category c : Category.values()) {
+            System.out.println("- " + c);
         }
 
         Category category = null;
         while (category == null) {
-            String input = scanner.nextLine().trim();
+            String input = getValidStringInput(scanner);
             if (!input.isEmpty()) {
                 try {
                     category = Category.valueOf(input.toUpperCase());

@@ -5,7 +5,8 @@ public enum Status {
     INVALID_INTEGER("Invalid Integer"),
     INVALID_DOUBLE("Invalid Double"),
     NO_INPUT("NO Input Provided"),
-    INVALID_RANGE("Invalid range");
+    INVALID_RANGE("Invalid range"),
+    INVALID_CATEGORY("Invalid Category");
 
     private final String description;
 
