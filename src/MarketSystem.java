@@ -38,9 +38,9 @@ public class MarketSystem {
         return systemName;
     }
 
-    public boolean setSystemName(String systemName) {
+    public Status setSystemName(String systemName) {
         this.systemName = systemName;
-        return true;
+        return Status.SUCCESS;
     }
 
     public Status isUsernameAvailable(String username) {
@@ -89,10 +89,11 @@ public class MarketSystem {
         return Status.SUCCESS;
     }
 
-    private void expandSellersList() {
+    private Status expandSellersList() {
         Seller[] newSellers = new Seller[sellersList.length * 2];
         System.arraycopy(sellersList, 0, newSellers, 0, sellersList.length);
         sellersList = newSellers;
+        return Status.SUCCESS;
     }
 
     public Seller getSellerByIndex(int index) {
@@ -133,12 +134,11 @@ public class MarketSystem {
         return Status.NO_PRODUCT;
     }
 
-    public boolean clearBuyerCart(int buyerIndex) {
-        if (buyerIndex < 0 || buyerIndex >= buyerCount) {
-            return false;
+    public Status clearBuyerCart(int buyerIndex) {
+        if (validBuyerIndex(buyerIndex).equals(Status.SUCCESS)) {
+            return buyersList[buyerIndex].getCurrentCart().clearCart();
         }
-        buyersList[buyerIndex].getCurrentCart().clearCart();
-        return true;
+        return Status.INVALID_RANGE;
     }
 
     public String getBuyerCartHistory(int buyerIndex) {
@@ -369,17 +369,8 @@ public class MarketSystem {
         return Status.NO_SELLER;
     }
 
-    public boolean isSellerByIndexExists(int index) {
-        return index >= 0 && index < sellerCount;
-    }
 
-    public boolean isSellerHasAnyProduct(int sellerIndex) {
-        return sellersList[sellerIndex].getProductCount() > 0;
-    }
 
-    public boolean isSellerHasProductByIndex(int sellerIndex, int productIndex) {
-        return sellersList[sellerIndex].getProductCount() > productIndex;
-    }
     public Status isProductNameExists(int sellerIndex, String productName) {
         return sellersList[sellerIndex].isProductNameExists(productName);
     }
@@ -402,6 +393,6 @@ public class MarketSystem {
         return ManageUtils.validateRange(index,buyersList[buyerIndex].getOrderCount());
     }
     public Status validCartIndex(int index, int buyerIndex){
-        return ManageUtils.validateRange(index,buyersList[index].getCurrentCartProductCount());
+        return ManageUtils.validateRange(index,buyersList[buyerIndex].getCurrentCartProductCount());
     }
 }

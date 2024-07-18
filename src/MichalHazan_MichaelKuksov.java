@@ -106,18 +106,6 @@ public class MichalHazan_MichaelKuksov {
 
         return Category.values()[index];
     }
-//    private static Category getValidCategory(Scanner scanner){
-//        Status status;
-//        Manage manage = new Manage();
-//        do{
-//            String category = scanner.nextLine();
-//            status = manage.setCategory(category);
-//            if (!status.equals(Status.SUCCESS)){
-//                System.out.println(status.getDescription());
-//            }
-//        }while (!status.equals(Status.SUCCESS));
-//        return manage.getCategory();
-//    }
     //--------case 1: Add Seller--------------
     private static void addSeller(MarketSystem system, Scanner scanner) {
         String sellerName;

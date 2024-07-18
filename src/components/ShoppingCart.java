@@ -39,9 +39,10 @@ public class ShoppingCart {
         return totalPrice;
     }
 
-    public void clearCart() {
+    public Status clearCart() {
         this.pBox = new ProductBox();
         this.totalPrice = 0.0;
+        return Status.SUCCESS;
     }
 
     @Override
