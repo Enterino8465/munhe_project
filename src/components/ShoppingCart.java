@@ -2,6 +2,8 @@ package src.components;
 
 import src.components.product.Product;
 import src.components.product.ProductBox;
+import src.components.product.SpeciallyPackedProduct;
+import src.utils.Status;
 
 public class ShoppingCart {
     private double totalPrice;
@@ -12,15 +14,12 @@ public class ShoppingCart {
     }
 
 
-    public boolean addProduct(Product product) {
+    public Status addProduct(Product product) {
         totalPrice += product.getPrice();
         return pBox.addProduct(product);
     }
-    public boolean addProduct(Product product, boolean includePackaging) {
+    public Status addProduct(SpeciallyPackedProduct product) {
         double finalPrice = product.getPrice();
-        if (includePackaging && product.hasSpecialPackaging()) {
-            finalPrice += product.getPackagingPrice();
-        }
         totalPrice += finalPrice;
         return pBox.addProduct(product);
     }

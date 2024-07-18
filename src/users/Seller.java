@@ -2,7 +2,9 @@ package src.users;
 
 import src.components.product.Product;
 import src.components.product.ProductBox;
+import src.components.product.SpeciallyPackedProduct;
 import src.utils.Category;
+import src.utils.Status;
 
 public class Seller extends User {
     private ProductBox productBox;
@@ -12,16 +14,17 @@ public class Seller extends User {
         this.productBox = new ProductBox();
     }
 
-    public boolean addProduct(String name, double price, Category category) {
+    public Status addProduct(String name, double price, Category category) {
         return productBox.addProduct(name, price, category);
     }
-    //add product with specialPackaging
-    public boolean addProduct(String name, double price, Category category, boolean specialPackaging, double packagingPrice) {
-        return productBox.addProduct(name, price, category, specialPackaging, packagingPrice);
-    }
-
-    public boolean addProduct(Product product) {
+    public Status addProduct(Product product) {
         return productBox.addProduct(product);
+    }
+    public Status addSpecialProduct(String name, double price, Category category) {
+        return productBox.addSpecialProduct(name, price, category);
+    }
+    public Status addSpecialProduct(SpeciallyPackedProduct sp) {
+        return productBox.addSpecialProduct(sp);
     }
 
     public Product[] getProducts() {
@@ -36,11 +39,11 @@ public class Seller extends User {
         return productBox.getProductByIndex(index);
     }
 
-    public boolean isProductNameExists(String wantedName) {
-        return productBox.getProductByName(wantedName) != null;
-    }
-    public boolean isProductHasSpecialPackage(int index) {
-        return productBox.getProductByIndex(index).hasSpecialPackaging();
+    public Status isProductNameExists(String wantedName) {
+        if(productBox.getProductByName(wantedName) != null){
+            return Status.NO_PRODUCT;
+        }
+        return Status.SUCCESS;
     }
 
     @Override

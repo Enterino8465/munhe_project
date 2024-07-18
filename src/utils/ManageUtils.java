@@ -1,17 +1,17 @@
 package src.utils;
 
 public class ManageUtils {
-    public static Status validCategory(String category){
-        if (category.isEmpty()){
-            return Status.NO_INPUT;
-        }
-        try{
-            Category.valueOf(category.toUpperCase());
-        }catch (Exception e){//todo
-            return Status.INVALID_CATEGORY;
-        }
-        return Status.SUCCESS;
-    }
+//    public static Status validCategory(String category){
+//        if (category.isEmpty()){
+//            return Status.NO_INPUT;
+//        }
+//        try{
+//            Category.valueOf(category.toUpperCase());
+//        }catch (Exception e){//todo
+//            return Status.INVALID_CATEGORY;
+//        }
+//        return Status.SUCCESS;
+//    }
     public static Status validString(String str){
         if(str.isEmpty()){
             return Status.NO_INPUT;
@@ -42,7 +42,7 @@ public class ManageUtils {
     }
 
     public static Status validateRange(int num, int maxVal) {
-        if (num >= 0 && num < maxVal){
+        if (num >= 0 && num <= maxVal){
             return Status.SUCCESS;
         }
         return Status.INVALID_RANGE;

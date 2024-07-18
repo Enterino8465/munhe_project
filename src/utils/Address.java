@@ -21,7 +21,6 @@ public class Address {
         this.streetName = streetName;
         return true;
     }
-
     public int getBuildingNumber() {
         return buildingNumber;
     }

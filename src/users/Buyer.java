@@ -3,7 +3,10 @@ package src.users;
 import src.components.Order;
 import src.components.ShoppingCart;
 import src.components.product.Product;
+import src.components.product.SpeciallyPackedProduct;
 import src.utils.Address;
+import src.utils.EmptyCartException;
+import src.utils.Status;
 
 public class Buyer extends User {
     private ShoppingCart currentCart;
@@ -52,11 +55,17 @@ public class Buyer extends User {
         return currentCart;
     }
 
-    public boolean addProductToCart(Product p, boolean includePackaging) {
-        return this.currentCart.addProduct(p, includePackaging);
+    public Status addProductToCart(Product p) {
+        return this.currentCart.addProduct(p);
+    }
+    public Status addProductToCart(SpeciallyPackedProduct p) {
+        return this.currentCart.addProduct(p);
     }
 
-    public boolean purchaseCart() {
+    public Status purchaseCart() throws EmptyCartException {
+        if (this.currentCart.getProductCount() == 0){
+            throw new EmptyCartException();
+        }
         if (orderCount == ordersHistory.length) { // Double the size of the array
             Order[] newOrdersHistory = new Order[ordersHistory.length * 2];
             for (int i = 0; i < orderCount; i++) {
@@ -66,10 +75,13 @@ public class Buyer extends User {
         }
         this.ordersHistory[orderCount++] = new Order(currentCart);
         this.currentCart = new ShoppingCart();
-        return true;
+        return Status.SUCCESS;
     }
-    public boolean isCartEmpty() {
-        return currentCart.getProductCount() == 0;
+    public Status isNotCartEmpty() {
+        if (currentCart.getProductCount() == 0){
+            return Status.EMPTY_CART;
+        }
+        return Status.SUCCESS;
     }
     @Override
     public String toString() {

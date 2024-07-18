@@ -8,10 +8,7 @@ import src.components.ShoppingCart;
 import src.components.product.Product;
 import src.users.Buyer;
 import src.users.Seller;
-import src.utils.Address;
-import src.utils.Category;
-import src.utils.ManageUtils;
-import src.utils.Status;
+import src.utils.*;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -46,31 +43,31 @@ public class MarketSystem {
         return true;
     }
 
-    public boolean isUsernameTaken(String username) {
+    public Status isUsernameAvailable(String username) {
         for (int i = 0; i < buyerCount; i++) {
             if (buyersList[i].getUserName().equals(username)) {
-                return true;
+                return Status.NAME_TAKEN;
             }
         }
         for (int i = 0; i < sellerCount; i++) {
             if (sellersList[i].getUserName().equals(username)) {
-                return true;
+                return Status.NAME_TAKEN;
             }
         }
-        return false;
+        return Status.SUCCESS;
     }
 
-    public boolean addBuyer(String userName, String password, String streetName, int buildingNumber, String city, String country) {
-        if (isUsernameTaken(userName)) {
+    public Status addBuyer(String userName, String password, String streetName, int buildingNumber, String city, String country) {
+        if (!isUsernameAvailable(userName).equals(Status.SUCCESS)) {
             System.out.println("Username is already taken.");
-            return false;
+            return Status.NAME_TAKEN;
         }
 
         if (buyerCount == buyersList.length) {
             expandBuyersList();
         }
         buyersList[buyerCount++] = new Buyer(userName, password, new Address(streetName, buildingNumber, city, country));
-        return true;
+        return Status.SUCCESS;
     }
 
     private void expandBuyersList() {
@@ -79,17 +76,17 @@ public class MarketSystem {
         buyersList = newBuyers;
     }
 
-    public boolean addSeller(String sellerName, String sellerPassword) {
-        if (isUsernameTaken(sellerName)) {
+    public Status addSeller(String sellerName, String sellerPassword) {
+        if (!isUsernameAvailable(sellerName).equals(Status.SUCCESS)) {
             System.out.println("Username is already taken.");
-            return false;
+            return Status.NAME_TAKEN;
         }
 
         if (sellerCount == sellersList.length) {
             expandSellersList();
         }
         sellersList[sellerCount++] = new Seller(sellerName, sellerPassword);
-        return true;
+        return Status.SUCCESS;
     }
 
     private void expandSellersList() {
@@ -99,14 +96,14 @@ public class MarketSystem {
     }
 
     public Seller getSellerByIndex(int index) {
-        if (index >= 0 && index < sellerCount) {
+        if (validSellerIndex(index).equals(Status.SUCCESS)) {
             return sellersList[index];
         }
         return null;
     }
 
     public Buyer getBuyerByIndex(int index) {
-        if (index >= 0 && index < buyerCount) {
+        if (validBuyerIndex(index).equals(Status.SUCCESS)) {
             return buyersList[index];
         }
         return null;
@@ -129,11 +126,11 @@ public class MarketSystem {
         }
         return null;
     }
-    public boolean hasBuyerItems(int buyerIndex) {
-        if (buyerIndex < 0 || buyerIndex >= buyerCount) {
-            return false;
+    public Status hasBuyerItems(int buyerIndex) {
+        if (validBuyerIndex(buyerIndex).equals(Status.SUCCESS) && buyersList[buyerIndex].getCurrentCartProductCount() > 0) {
+            return Status.SUCCESS;
         }
-        return buyersList[buyerIndex].getCurrentCartProductCount() > 0;
+        return Status.NO_PRODUCT;
     }
 
     public boolean clearBuyerCart(int buyerIndex) {
@@ -158,27 +155,29 @@ public class MarketSystem {
         }
         return buyerHistoryOrder.toString();
     }
-    public boolean setBuyerCurrentCartFromHistory(int buyerIndex, int cartIndex) {
+    public Status setBuyerCurrentCartFromHistory(int buyerIndex, int cartIndex) {
         // Set the chosen cart from history as the current cart and return success status
-        if (buyerIndex < 0 || buyerIndex >= buyerCount) {
-            return false;
+        Status status = validBuyerIndex(buyerIndex);
+        if (!status.equals(Status.SUCCESS)) {
+            return status;
         }
-
         Buyer buyer = buyersList[buyerIndex];
-        if (cartIndex < 0 || cartIndex >= buyer.getOrderCount()) {
-            return false;
+        status = validOrderIndex(cartIndex,buyerIndex);
+        if (!status.equals(Status.SUCCESS)) {
+            return status;
         }
 
         Order selectedOrder = buyer.getOrderByIndex(cartIndex);
         if (selectedOrder == null) {
-            return false;
+            return Status.EMPTY_CART;
         }
+        buyer.getCurrentCart().clearCart();
         for (int i = 0; i < selectedOrder.getProductCount(); i++) {
             Product product = selectedOrder.getProductByIndex(i);
-            buyer.addProductToCart(product, false);
+            buyer.addProductToCart(product);
         }
 
-        return true;
+        return Status.SUCCESS;
     }
 
     public String getProductsByCategory(Category category) {
@@ -193,9 +192,6 @@ public class MarketSystem {
             }
         }
         return sb.toString();
-    }
-    public double getPriceProductSpecialPackage(int sellerIndex, int productIndex) {
-        return sellersList[sellerIndex].getProductByIndex(productIndex).getPackagingPrice();
     }
     public String getProductNameByIndex(int sellerIndex, int productIndex) {
         return sellersList[sellerIndex].getProductByIndex(productIndex).getName();
@@ -219,30 +215,29 @@ public class MarketSystem {
         return buyers;
     }
 
-    public boolean addProductToSeller(String productName, double price, int sellerIndex, Category category) {
+
+    public Status addProductToSeller(String productName, double price, int sellerIndex, Category category, boolean isSpeciallyPacked) {
+        if(isSpeciallyPacked){
+            return sellersList[sellerIndex].addSpecialProduct(productName, price, category);
+        }
         return sellersList[sellerIndex].addProduct(productName, price, category);
     }
 
-    public boolean addProductToSeller(String productName, double price, int sellerIndex, Category category, boolean specialPackaging, double packagingPrice) {
-        return sellersList[sellerIndex].addProduct(productName, price, category, specialPackaging, packagingPrice);
-    }
-
-    public void addProductToBuyer(int buyerIndex, int sellerIndex, int productIndex, boolean includePackaging) {
+    public Status addProductToBuyer(int buyerIndex, int sellerIndex, int productIndex) {
         Product product = sellersList[sellerIndex].getProductByIndex(productIndex);
-        buyersList[buyerIndex].addProductToCart(product, includePackaging);
+        return buyersList[buyerIndex].addProductToCart(product);
     }
 
-    public boolean isBuyerCartEmpty(int buyerIndex) {
-        if (buyerIndex >= 0 && buyerIndex < buyerCount) {
-            return buyersList[buyerIndex].isCartEmpty();
+    public Status makePurchaseBuyerByIndex(int buyerIndex) {
+        try {
+            if (buyerIndex >= 0 && buyerIndex < buyerCount) {
+                return buyersList[buyerIndex].purchaseCart();
+            }
         }
-        return true; // Return true if the buyer index is invalid
-    }
-    public boolean makePurchaseBuyerByIndex(int buyerIndex) {
-        if (buyerIndex >= 0 && buyerIndex < buyerCount) {
-            return buyersList[buyerIndex].purchaseCart();
+        catch (EmptyCartException e){
+            return Status.EMPTY_CART;
         }
-        return false;
+        return Status.EMPTY_CART;
     }
 
     public String generateStrSellersList() {
@@ -312,9 +307,9 @@ public class MarketSystem {
         return buyerList.toString();
     }
 
-    public StringBuffer sellersData() {
+    public String sellersData() {
         Arrays.sort(sellersList, 0, sellerCount, Comparator.comparingInt(Seller::getProductCount).reversed());
-        StringBuffer sellerList = new StringBuffer();
+        StringBuilder sellerList = new StringBuilder();
         for (int i = 0; i < sellerCount; i++) {
             sellerList.append("-------------------------------------------------------\n");
             sellerList.append(i + 1 + ") " + sellersList[i] + "\n");
@@ -324,24 +319,22 @@ public class MarketSystem {
             }
         }
         sellerList.append("-------------------------------------------------------");
-        return sellerList;
+        return sellerList.toString();
     }
 
-    public StringBuffer productsByCategory(Category category) {
-        StringBuffer productsList = new StringBuffer();
+    public String productsByCategory(Category category) {
+        StringBuilder productsList = new StringBuilder();
         productsList.append("Products in category: ").append(category.name()).append("\n");
 
         boolean foundProducts = false;
 
         for (Seller seller : sellersList) {
             if (seller != null) {
-                Product[] products = seller.getProducts();
-                for (int i = 0; i < seller.getProductCount(); i++) {
-                    Product product = products[i];
-                    if (product.getCategory() == category) {
+                for (Product p : seller.getProducts()) {
+                    if (p.getCategory() == category) {
                         productsList.append("Seller: ").append(seller.getUserName())
-                                .append(" - Product: ").append(product.getName())
-                                .append(" - Price: $").append(product.getPrice()).append("\n");
+                                .append(" - Product: ").append(p.getName())
+                                .append(" - Price: $").append(p.getPrice()).append("\n");
                         foundProducts = true;
                     }
                 }
@@ -352,25 +345,28 @@ public class MarketSystem {
             productsList.append("No products found in this category.");
         }
 
-        return productsList;
+        return productsList.toString();
 
     }
-
-    public boolean isAnyBuyersExists() {
-        return buyerCount > 0;
-    }
-
-    public boolean isBuyerByIndexExists(int index) {
-        return index >= 0 && index < buyerCount;
-    }
-    public int getBuyerOrderCount(int buyerIndex) {
-        if (isBuyerByIndexExists(buyerIndex)) {
-            return buyersList[buyerIndex].getOrderCount();
+    public Status isBuyerHasOrderHistory(int buyerIndex){
+        if(buyersList[buyerIndex].getOrderCount()==0){
+            return Status.No_ORDER_HISTORY;
         }
-        return 0;
+        return Status.SUCCESS;
     }
-    public boolean isAnySellersExists() {
-        return sellerCount > 0;
+
+    public Status isAnyBuyersExists() {
+        if (buyerCount > 0){
+            return Status.SUCCESS;
+        }
+        return Status.NO_BUYER;
+    }
+
+    public Status isAnySellersExists() {
+        if (sellerCount > 0){
+            return Status.SUCCESS;
+        }
+        return Status.NO_SELLER;
     }
 
     public boolean isSellerByIndexExists(int index) {
@@ -384,19 +380,22 @@ public class MarketSystem {
     public boolean isSellerHasProductByIndex(int sellerIndex, int productIndex) {
         return sellersList[sellerIndex].getProductCount() > productIndex;
     }
-    public boolean isProductNameExists(int sellerIndex, String productName) {
+    public Status isProductNameExists(int sellerIndex, String productName) {
         return sellersList[sellerIndex].isProductNameExists(productName);
     }
-    public boolean isProductWithSpecialPackage(int sellerIndex, int productIndex) {
-        return sellersList[sellerIndex].isProductHasSpecialPackage(productIndex);
-    }
     public Status validSellerIndex(int index){
+        if (sellerCount == 0){
+            return Status.NO_SELLER;
+        }
         return ManageUtils.validateRange(index,this.sellerCount);
     }
     public Status validItemIndex(int index, int sellerIndex){
         return ManageUtils.validateRange(index,sellersList[sellerIndex].getProductCount());
     }
     public Status validBuyerIndex(int index){
+        if (buyerCount == 0){
+            return Status.NO_BUYER;
+        }
         return ManageUtils.validateRange(index,this.buyerCount);
     }
     public Status validOrderIndex(int index, int buyerIndex){

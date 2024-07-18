@@ -1,6 +1,7 @@
 package src.components.product;
 
 import src.utils.Category;
+import src.utils.Status;
 
 import java.util.Arrays;
 
@@ -12,29 +13,44 @@ public class ProductBox {
         this.products = new Product[2];
     }
 
-    public boolean addProduct(String name, double price, Category category) {
+    public Status addProduct(String name, double price, Category category) {
         if (productCount == products.length) { // Double the size of the array
             extendProductsList();
         }
         products[productCount++] = new Product(name, price, category);
-        return true;
+        return Status.SUCCESS;
     }
-    //add with specialPackaging
-    public boolean addProduct(String name, double price, Category category, boolean specialPackaging, double packagingPrice) {
-        if (productCount == products.length) { // Double the size of the array
-            extendProductsList();
-        }
-        products[productCount++] = new Product(name, price, category);
-        products[productCount - 1].setSpecialPackaging(specialPackaging, packagingPrice);
-        return true;
-    }
-    public boolean addProduct(Product p) {
+    public Status addProduct(Product p) {
         if (productCount == products.length) { // Double the size of the array
             extendProductsList();
         }
         products[productCount++] = new Product(p);
-        return true;
+        return Status.SUCCESS;
     }
+    public Status addProduct(SpeciallyPackedProduct p) {
+        if (productCount == products.length) { // Double the size of the array
+            extendProductsList();
+        }
+        products[productCount++] = new Product(p);
+        return Status.SUCCESS;
+    }
+
+    //add with specialPackaging
+    public Status addSpecialProduct(String name, double price, Category category){
+        if (productCount == products.length) { // Double the size of the array
+            extendProductsList();
+        }
+        products[productCount++] = new SpeciallyPackedProduct(name, price, category);
+        return Status.SUCCESS;
+    }
+    public Status addSpecialProduct(SpeciallyPackedProduct sp){
+        if (productCount == products.length) { // Double the size of the array
+            extendProductsList();
+        }
+        products[productCount++] = new SpeciallyPackedProduct(sp);
+        return Status.SUCCESS;
+    }
+
 
     private void extendProductsList(){
         Product[] newProducts = new Product[products.length * 2];

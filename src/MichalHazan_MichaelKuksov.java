@@ -2,6 +2,7 @@ package src;
 
 import src.utils.Category;
 import src.utils.Manage;
+import src.utils.ManageUtils;
 import src.utils.Status;
 
 import java.util.Scanner;
@@ -87,18 +88,36 @@ public class MichalHazan_MichaelKuksov {
         }while (!status.equals(Status.SUCCESS));
         return manage.getStr();
     }
-    private static Category getValidCategory(Scanner scanner){
+    public static Category getValidCategory(Scanner scanner) {
         Status status;
-        Manage manage = new Manage();
+        int index;
         do{
-            String category = scanner.nextLine();
-            status = manage.setCategory(category);
-            if (!status.equals(Status.SUCCESS)){
-                System.out.println(status.getDescription());
+            int counter = 0;
+            for (Category c : Category.values()) {
+                System.out.println(++counter + ": " + c);
+            }
+            System.out.println("Choose category number:");
+            index = getValidIntInput(scanner) -1;
+            status = ManageUtils.validateRange(index,Category.values().length-1);
+            if(!status.equals(Status.SUCCESS)){
+                System.out.println(status);
             }
         }while (!status.equals(Status.SUCCESS));
-        return manage.getCategory();
+
+        return Category.values()[index];
     }
+//    private static Category getValidCategory(Scanner scanner){
+//        Status status;
+//        Manage manage = new Manage();
+//        do{
+//            String category = scanner.nextLine();
+//            status = manage.setCategory(category);
+//            if (!status.equals(Status.SUCCESS)){
+//                System.out.println(status.getDescription());
+//            }
+//        }while (!status.equals(Status.SUCCESS));
+//        return manage.getCategory();
+//    }
     //--------case 1: Add Seller--------------
     private static void addSeller(MarketSystem system, Scanner scanner) {
         String sellerName;
@@ -106,7 +125,7 @@ public class MichalHazan_MichaelKuksov {
         while (true) {
             System.out.print("Enter seller name: ");
             sellerName = getValidStringInput(scanner);
-            if (!system.isUsernameTaken(sellerName)) {
+            if (system.isUsernameAvailable(sellerName).equals(Status.SUCCESS)) {
                 break;
             }
             System.out.println("Username already taken. Please choose a different name. ");
@@ -115,7 +134,7 @@ public class MichalHazan_MichaelKuksov {
         System.out.print("Enter seller password: ");
         String sellerPassword = getValidStringInput(scanner);
 
-        if (system.addSeller(sellerName, sellerPassword)) {
+        if (system.addSeller(sellerName, sellerPassword).equals(Status.SUCCESS)) {
             System.out.println("Seller added.");
         }
     }
@@ -126,7 +145,7 @@ public class MichalHazan_MichaelKuksov {
         while (true) {
             System.out.print("Enter buyer name: ");
             buyerName = getValidStringInput(scanner);
-            if (!system.isUsernameTaken(buyerName)) {
+            if (system.isUsernameAvailable(buyerName).equals(Status.SUCCESS)) {
                 break;
             }
             System.out.println("Username already taken. Please choose a different name.");
@@ -143,74 +162,94 @@ public class MichalHazan_MichaelKuksov {
         System.out.print("Enter country: ");
         String country = getValidStringInput(scanner);
 
-        if (system.addBuyer(buyerName, buyerPassword, streetName, buildingNumber, city, country)) {
+        if (system.addBuyer(buyerName, buyerPassword, streetName, buildingNumber, city, country).equals(Status.SUCCESS)) {
             System.out.println("Buyer added.");
         }
     }
     //--------case 3: Add Product to Seller--------------
     private static void addProductToSeller(MarketSystem system, Scanner scanner) {
-        if (!system.isAnySellersExists()) {
+        Status status;
+        if (!system.isAnySellersExists().equals(Status.SUCCESS)) {
             System.out.println("There are no sellers yet. Please add seller first");
             return;
         }
         System.out.println("The lists of Sellers: ");
         System.out.println(system.generateStrSellersList());
-        System.out.println("Enter number of seller: ");
-        int indexSeller = getValidIntInput(scanner) -1;
-        if (indexSeller >= 0 && !system.isSellerByIndexExists(indexSeller)) {
-            System.out.println("Invalid index. Please try again.");
-            return;
-        }
-        System.out.println("Enter Product Name: ");
-        String productName = getValidStringInput(scanner);
-        while (system.isProductNameExists(indexSeller, productName)) {
-            System.out.println("Product name is taken, please choose another one: ");
+        int indexSeller;
+        do{
+            System.out.println("Enter number of seller: ");
+            indexSeller = getValidIntInput(scanner) -1;
+            status = system.validSellerIndex(indexSeller);
+            if (!status.equals(Status.SUCCESS)) {
+                System.out.println("Invalid index. Please try again.");
+            }
+        }while (!status.equals(Status.SUCCESS));
+
+        String productName;
+        do{
+            System.out.println("Enter Product Name: ");
             productName = getValidStringInput(scanner);
-        }
+            status = system.isProductNameExists(indexSeller, productName);
+            if(!status.equals(Status.SUCCESS)){
+                System.out.println("Product name is taken, please try again");
+            }
+        }while (!status.equals(Status.SUCCESS));
+
         System.out.println("Enter product price: ");
         double productPrice = getValidDoubleInput(scanner);
         System.out.println("Select Category:");
-        Category category = getCategory(scanner); //todo
-        System.out.print("Is this a special package? (yes/no): ");
-        String isSpecialPackageInput = scanner.nextLine();//todo
+        Category category = getValidCategory(scanner);
+        String isSpecialPackageInput;
+        do {
+            System.out.print("Is this a special package? (yes/no): ");
+            isSpecialPackageInput = getValidStringInput(scanner);
+        }while (!(isSpecialPackageInput.equalsIgnoreCase("yes") || isSpecialPackageInput.equalsIgnoreCase("no")));
         boolean isSpecialPackage = isSpecialPackageInput.equalsIgnoreCase("yes");
-        if (isSpecialPackage) {
-            System.out.println("Enter special package price: ");
-            double packagingPrice = getValidDoubleInput(scanner);
-            system.addProductToSeller(productName, productPrice, indexSeller, category, isSpecialPackage, packagingPrice);
-        } else {
-            system.addProductToSeller(productName, productPrice, indexSeller, category);
-        }
 
-        System.out.println("Product added");
+        status = system.addProductToSeller(productName, productPrice, indexSeller, category,isSpecialPackage);
+        if(status.equals(Status.SUCCESS)){
+            System.out.println("Product added");
+        }
     }
     //--------case 4: Add Product to Buyer--------------
     private static void addProductToBuyer(MarketSystem system, Scanner scanner) {
-        if (!system.isAnyBuyersExists()) {
+        Status status;
+
+        if (!system.isAnyBuyersExists().equals(Status.SUCCESS)) {
             System.out.println("There are no buyers yet. Please add buyer first");
             return;
         }
-        if (!system.isAnySellersExists()) {
+        if (!system.isAnySellersExists().equals(Status.SUCCESS)) {
             System.out.println("There are no sellers yet. Please add seller first");
             return;
         }
-        System.out.println("The lists of Buyers: ");
-        System.out.println(system.generateStrBuyersList());
-        System.out.println("Enter number of buyer: ");
-        int indexBuyer = getValidIntInput(scanner) -1;
-        if (!system.isBuyerByIndexExists(indexBuyer)) {
-            System.out.println("Invalid index. Please try again.");
-            return;
-        }
-        System.out.println("The lists of Sellers: ");
-        System.out.println(system.generateStrSellersList());
-        System.out.println("Enter number of seller: ");
-        int indexSeller = getValidIntInput(scanner) -1;
-        if (!system.isSellerByIndexExists(indexSeller)) {
-            System.out.println("Invalid index. Please try again.");
-            return;
-        }
-        if (!system.isSellerHasAnyProduct(indexSeller)) {
+        int indexBuyer;
+
+        do{
+            System.out.println("The lists of Buyers: ");
+            System.out.println(system.generateStrBuyersList());
+            System.out.println("Enter number of buyer: ");
+            indexBuyer = getValidIntInput(scanner) -1;
+            status = system.validBuyerIndex(indexBuyer);
+            if (!status.equals(Status.SUCCESS)){
+                System.out.println(status);
+            }
+        }while (!status.equals(Status.SUCCESS));
+
+        int indexSeller;
+        do{
+            System.out.println("The lists of Sellers: ");
+            System.out.println(system.generateStrSellersList());
+            System.out.println("Enter number of seller: ");
+            indexSeller = getValidIntInput(scanner) -1;
+            status = system.validSellerIndex(indexSeller);
+            if(!status.equals(Status.SUCCESS)){
+                System.out.println("Invalid index. Please try again.");
+            }
+        }while (!status.equals(Status.SUCCESS));
+
+
+        if (!system.validItemIndex(0, indexSeller).equals(Status.SUCCESS)) {
             System.out.println("There are no items in this seller bag yet.");
             return;
         }
@@ -218,42 +257,39 @@ public class MichalHazan_MichaelKuksov {
         System.out.println(system.generateStrSellersProducts(indexSeller));
         System.out.println("Enter number of product: ");
         int indexItem = getValidIntInput(scanner) -1;
-        if (!system.isSellerHasProductByIndex(indexSeller , indexItem)) {
+        if (!system.validItemIndex(indexItem,indexSeller).equals(Status.SUCCESS)) {
             System.out.println("Invalid index. Please try again later.");
             return;
         }
-        //isProductWithSpecialPackage
-        boolean includePackaging = false;
-        if (system.isProductWithSpecialPackage(indexSeller, indexItem)) {
-            System.out.println("This product has special packaging for an additional $" + system.getPriceProductSpecialPackage(indexSeller, indexItem) + ". Do you want to include it? (yes/no): ");
-            String response = scanner.nextLine().trim().toLowerCase();
-            includePackaging = response.equals("yes");
-        }
-        system.addProductToBuyer(indexBuyer, indexSeller, indexItem, includePackaging);
+        system.addProductToBuyer(indexBuyer, indexSeller, indexItem);
         System.out.println("You Chose to add to " + system.getBuyerByIndex(indexBuyer).getUserName() + "'s cart: \n" + system.getProductNameByIndex(indexSeller, indexItem));
-
     }
     //--------case 5: Pay for Buyer's Shopping Cart--------------
     private static void payForBuyerCart(MarketSystem system, Scanner scanner) {
-        if (!system.isAnyBuyersExists()) {
+        Status status;
+        if (!system.isAnyBuyersExists().equals(Status.SUCCESS)) {
             System.out.println("There are no buyers yet. Please add buyer first");
             return;
         }
-        System.out.println("The lists of Buyers: ");
-        System.out.println(system.generateStrBuyersList());
-        System.out.println("Enter number of buyer: ");
-        int indexBuyer = getValidIntInput(scanner) -1;
-        if (!system.isBuyerByIndexExists(indexBuyer)) {
-            System.out.println("Invalid index. Please try again.");
-            return;
+        int indexBuyer;
+        do{
+            System.out.println("The lists of Buyers: ");
+            System.out.println(system.generateStrBuyersList());
+            System.out.println("Enter number of buyer: ");
+            indexBuyer = getValidIntInput(scanner) -1;
+            status = system.validBuyerIndex(indexBuyer);
+            if (!status.equals(Status.SUCCESS)){
+                System.out.println("Invalid index. Please try again.");
+            }
+        }while (!status.equals(Status.SUCCESS));
+        status = system.makePurchaseBuyerByIndex(indexBuyer);
+        if(status.equals(Status.SUCCESS)) {
+            System.out.println(system.generateStrBuyerCartDetailsByIndex(indexBuyer));
+            System.out.println("purchase completed successfully");
         }
-        if (system.isBuyerCartEmpty(indexBuyer)) {
-            System.out.println("The cart is empty. No purchase can be made.");
-            return;
+        else{
+            System.out.println(status);
         }
-        System.out.println(system.generateStrBuyerCartDetailsByIndex(indexBuyer));
-        system.makePurchaseBuyerByIndex(indexBuyer);
-        System.out.println("purchase completed successfully");
     }
     //--------case 6: Display All Buyers--------------
     private static void displayAllBuyers(MarketSystem system) {
@@ -267,13 +303,13 @@ public class MichalHazan_MichaelKuksov {
     //--------case 8: Display All Products from a Category--------------
     private static void displayProductsByCategory(MarketSystem system, Scanner scanner) {
 
-        if (!system.isAnySellersExists()) {
+        if (!system.isAnySellersExists().equals(Status.SUCCESS)) {
             System.out.println("There are no sellers yet. Please add a seller first.");
             return;
         }
 
         System.out.println("Select Category:");
-        Category category = getCategory(scanner);
+        Category category = getValidCategory(scanner);
 
         System.out.println(system.productsByCategory(category));
 
@@ -281,74 +317,57 @@ public class MichalHazan_MichaelKuksov {
 
     //--------case 9: Create a New Cart from Buyer's Cart History--------------
     private static void createNewCartFromHistory(MarketSystem system, Scanner scanner) {
-
-        if (!system.isAnyBuyersExists()) {
+        Status status;
+        if (!system.isAnyBuyersExists().equals(Status.SUCCESS)) {
             System.out.println("There are no buyers yet. Please add a buyer first.");
             return;
         }
+        int buyerIndex;
+        do{
+            System.out.println("List of Buyers:");
+            System.out.println(system.generateStrBuyersList());
+            System.out.print("Choose a buyer: ");
+            buyerIndex = getValidIntInput(scanner) - 1;
+            status = system.validBuyerIndex(buyerIndex);
+            if(!status.equals(Status.SUCCESS)){
+                System.out.println(status);
+            }
+        }while (!status.equals(Status.SUCCESS));
 
-        System.out.println("List of Buyers:");
-        System.out.println(system.generateStrBuyersList());
-
-
-        System.out.print("Choose a buyer by number: ");
-        int buyerIndex = getValidIntInput(scanner) - 1;
-
-        if (system.getBuyerOrderCount(buyerIndex) == 0) {
+        if (!system.isBuyerHasOrderHistory(buyerIndex).equals(Status.SUCCESS)) {
             System.out.println("The selected buyer has no order history. Operation canceled.");
             return;
         }
-        if (system.hasBuyerItems(buyerIndex)) {
-            System.out.println("The current cart is not empty. Do you want to clear it and create a new one? (Y/N)");
-            String clearCartChoice = scanner.nextLine().trim().toUpperCase();
-
-            if (clearCartChoice.equals("Y")) {
-                system.clearBuyerCart(buyerIndex);
-            } else {
+        if(system.hasBuyerItems(buyerIndex).equals(Status.SUCCESS)) {
+            String clearCartChoice;
+            do {
+                System.out.println("The current cart is not empty. Do you want to clear it and create a new one? (Y/N)");
+                clearCartChoice = getValidStringInput(scanner).toUpperCase();
+                if(!(clearCartChoice.equals("Y") ||clearCartChoice.equals("N"))){
+                    System.out.println("input invalid, please try again.");
+                }
+            } while (!(clearCartChoice.equals("Y") ||clearCartChoice.equals("N")));
+            if (clearCartChoice.equals("N")) {
                 System.out.println("Operation canceled.");
                 return;
             }
         }
-
-        System.out.println("List of Buyer's Cart History:");
-        System.out.println(system.getBuyerCartHistory(buyerIndex));
-
-
-        System.out.print("Choose a cart from history by number: ");
-        int cartIndex = getValidIntInput(scanner) - 1;
-        // Set the chosen cart from history as the current cart
-        if (system.setBuyerCurrentCartFromHistory(buyerIndex, cartIndex)) {
-            System.out.println("The cart has been successfully set as the current cart.");
-        } else {
-            System.out.println("Invalid cart index. Operation canceled.");
-        }
-
-    }
-
-    ///////////////////////////////////////  GET CATEGORY  /////////////////////////////////////////
-
-    public static Category getCategory(Scanner scanner) {
-        System.out.println("Enter product category:");
-        for (Category c : Category.values()) {
-            System.out.println("- " + c);
-        }
-
-        Category category = null;
-        while (category == null) {
-            String input = getValidStringInput(scanner);
-            if (!input.isEmpty()) {
-                try {
-                    category = Category.valueOf(input.toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    System.out.println("Invalid category. Please enter again.");
-                }
-            } else {
-                System.out.println("Write one of the name of the categories list above");
+        int cartIndex;
+        do{
+            System.out.println("List of Buyer's Cart History:");
+            System.out.println(system.getBuyerCartHistory(buyerIndex));
+            System.out.print("Choose a cart from history: ");
+            cartIndex = getValidIntInput(scanner) - 1;
+            status = system.validCartIndex(cartIndex,buyerIndex);
+            if(!status.equals(Status.SUCCESS)){
+                System.out.println(status);
             }
+        }while (!status.equals(Status.SUCCESS));
+
+        // Set the chosen cart from history as the current cart
+        if (system.setBuyerCurrentCartFromHistory(buyerIndex, cartIndex).equals(Status.SUCCESS)) {
+            System.out.println("The cart has been successfully set as the current cart.");
         }
-        return category;
     }
-
-
 
 }
