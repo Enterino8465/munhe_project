@@ -70,10 +70,11 @@ public class MarketSystem {
         return Status.SUCCESS;
     }
 
-    private void expandBuyersList() {
+    private Status expandBuyersList() {
         Buyer[] newBuyers = new Buyer[buyersList.length * 2];
         System.arraycopy(buyersList, 0, newBuyers, 0, buyersList.length);
         buyersList = newBuyers;
+        return Status.SUCCESS;
     }
 
     public Status addSeller(String sellerName, String sellerPassword) {
@@ -110,23 +111,7 @@ public class MarketSystem {
         return null;
     }
 
-    public Seller getSellerByName(String name) {
-        for (Seller seller : sellersList) {
-            if (seller != null && seller.getUserName().equals(name)) {
-                return seller;
-            }
-        }
-        return null;
-    }
 
-    public Buyer getBuyerByName(String name) {
-        for (Buyer buyer : buyersList) {
-            if (buyer != null && buyer.getUserName().equals(name)) {
-                return buyer;
-            }
-        }
-        return null;
-    }
     public Status hasBuyerItems(int buyerIndex) {
         if (validBuyerIndex(buyerIndex).equals(Status.SUCCESS) && buyersList[buyerIndex].getCurrentCartProductCount() > 0) {
             return Status.SUCCESS;
@@ -171,7 +156,7 @@ public class MarketSystem {
         if (selectedOrder == null) {
             return Status.EMPTY_CART;
         }
-        buyer.getCurrentCart().clearCart();
+        clearBuyerCart(buyerIndex);
         for (int i = 0; i < selectedOrder.getProductCount(); i++) {
             Product product = selectedOrder.getProductByIndex(i);
             buyer.addProductToCart(product);

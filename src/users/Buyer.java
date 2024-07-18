@@ -38,9 +38,9 @@ public class Buyer extends User {
         return address;
     }
 
-    public boolean setAddress(Address address) {
+    public Status setAddress(Address address) {
         this.address = address;
-        return true;
+        return Status.SUCCESS;
     }
 
     public int getCurrentCartProductCount() {

@@ -1,5 +1,7 @@
 package src.users;
 
+import src.utils.Status;
+
 public class User {
     private String userName;
     private String password;
@@ -13,20 +15,24 @@ public class User {
         return userName;
     }
 
-    public boolean setUserName(String userName) {
+    public Status setUserName(String userName) {
         this.userName = userName;
-        return true;
+        return Status.SUCCESS;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public boolean setPassword(String password) {
+    public Status setPassword(String password) {
         this.password = password;
-        return true;
+        return Status.SUCCESS;
     }
-    public boolean validatePassword(String attempt) {
-        return this.password.equals(attempt);
+    public Status validatePassword(String attempt) {
+        if(this.password.equals(attempt)){
+            return Status.SUCCESS;
+        }
+        return Status.WRONG_PASSWORD;
     }
+
 }

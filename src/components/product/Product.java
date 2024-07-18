@@ -52,9 +52,9 @@ public class Product {
         return category;
     }
 
-    public boolean setCategory(Category category) {
+    public Status setCategory(Category category) {
         this.category = category;
-        return true;
+        return Status.SUCCESS;
     }
 
 

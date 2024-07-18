@@ -2,6 +2,7 @@ package src.utils;
 
 public enum Status {
     SUCCESS("Accomplished"),
+    WRONG_PASSWORD("Wrong Password"),
     NAME_TAKEN("Username Already Exists"),
     NO_BUYER("No Buyers Added Yet"),
     NO_SELLER("No Sellers Added Yet"),

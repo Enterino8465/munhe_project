@@ -17,26 +17,26 @@ public class Address {
         return streetName;
     }
 
-    public boolean setStreetName(String streetName) {
+    public Status setStreetName(String streetName) {
         this.streetName = streetName;
-        return true;
+        return Status.SUCCESS;
     }
     public int getBuildingNumber() {
         return buildingNumber;
     }
 
-    public boolean setBuildingNumber(int buildingNumber) {
+    public Status setBuildingNumber(int buildingNumber) {
         this.buildingNumber = buildingNumber;
-        return true;
+        return Status.SUCCESS;
     }
 
     public String getCity() {
         return city;
     }
 
-    public boolean setCity(String city) {
+    public Status setCity(String city) {
         this.city = city;
-        return true;
+        return Status.SUCCESS;
     }
 
     public String getCountry() {

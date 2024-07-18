@@ -1,7 +1,7 @@
 package src;
 
 import src.utils.Category;
-import src.utils.Manage;
+import src.utils.ManageInput;
 import src.utils.ManageUtils;
 import src.utils.Status;
 
@@ -50,43 +50,43 @@ public class MichalHazan_MichaelKuksov {
 
     private static int getValidIntInput(Scanner scanner) {
         Status status;
-        Manage manage = new Manage();
+        ManageInput manageInput = new ManageInput();
         do {
             System.out.println("Enter a number: ");
             String num = scanner.nextLine();
-            status = manage.setInt(num);
+            status = manageInput.setInt(num);
             if (!status.equals(Status.SUCCESS)){
                 System.out.println(status.getDescription());
             }
         }while (!status.equals(Status.SUCCESS));
-        return manage.getNumInt();
+        return manageInput.getNumInt();
     }
     // Utility method to get valid double input
     private static double getValidDoubleInput(Scanner scanner) {
         Status status;
-        Manage manage = new Manage();
+        ManageInput manageInput = new ManageInput();
         do {
             System.out.println("Enter number: ");
             String num = scanner.nextLine();
-            status = manage.setDouble(num);
+            status = manageInput.setDouble(num);
             if (!status.equals(Status.SUCCESS)){
                 System.out.println(status.getDescription());
             }
         }while (!status.equals(Status.SUCCESS));
-        return manage.getNumDouble();
+        return manageInput.getNumDouble();
     }
     // Utility method to get valid double input
     private static String getValidStringInput(Scanner scanner){
         Status status;
-        Manage manage = new Manage();
+        ManageInput manageInput = new ManageInput();
         do{
             String str = scanner.nextLine();
-            status = manage.setString(str);
+            status = manageInput.setString(str);
             if (!status.equals(Status.SUCCESS)){
                 System.out.println(status.getDescription());
             }
         }while (!status.equals(Status.SUCCESS));
-        return manage.getStr();
+        return manageInput.getStr();
     }
     public static Category getValidCategory(Scanner scanner) {
         Status status;

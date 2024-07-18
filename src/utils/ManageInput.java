@@ -1,6 +1,6 @@
 package src.utils;
 
-public class Manage {
+public class ManageInput {
     private int numInt;
     private double numDouble;
     private String str;

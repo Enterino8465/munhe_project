@@ -52,12 +52,13 @@ public class ProductBox {
     }
 
 
-    private void extendProductsList(){
+    private Status extendProductsList(){
         Product[] newProducts = new Product[products.length * 2];
         for (int i = 0; i < products.length; i++) {
             newProducts[i] = products[i];
         }
         products = newProducts;
+        return Status.SUCCESS;
     }
 
     public Product[] getProducts() {
