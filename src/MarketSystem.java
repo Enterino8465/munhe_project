@@ -313,9 +313,11 @@ public class MarketSystem {
 
         boolean foundProducts = false;
 
-        for (Seller seller : sellersList) {
+        for (int i=0;i<sellerCount;i++) {
+            Seller seller = sellersList[i];
             if (seller != null) {
-                for (Product p : seller.getProducts()) {
+                for (int j = 0; j < seller.getProductCount(); j++) {
+                    Product p=seller.getProducts()[j];
                     if (p.getCategory() == category) {
                         productsList.append("Seller: ").append(seller.getUserName())
                                 .append(" - Product: ").append(p.getName())
