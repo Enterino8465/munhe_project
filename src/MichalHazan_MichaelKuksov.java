@@ -46,6 +46,7 @@ public class MichalHazan_MichaelKuksov {
     }
 
 // Utility method to get valid integer input
+
     private static int getValidIntInput(Scanner scanner) {
         Status status;
         Manage manage = new Manage();

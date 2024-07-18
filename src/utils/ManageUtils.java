@@ -41,8 +41,8 @@ public class ManageUtils {
         return Status.SUCCESS;
     }
 
-    public static Status validRange(int num) {
-        if (num > 0 && num < 100){
+    public static Status validateRange(int num, int maxVal) {
+        if (num >= 0 && num < maxVal){
             return Status.SUCCESS;
         }
         return Status.INVALID_RANGE;

@@ -10,6 +10,8 @@ import src.users.Buyer;
 import src.users.Seller;
 import src.utils.Address;
 import src.utils.Category;
+import src.utils.ManageUtils;
+import src.utils.Status;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -388,6 +390,19 @@ public class MarketSystem {
     public boolean isProductWithSpecialPackage(int sellerIndex, int productIndex) {
         return sellersList[sellerIndex].isProductHasSpecialPackage(productIndex);
     }
-
-
+    public Status validSellerIndex(int index){
+        return ManageUtils.validateRange(index,this.sellerCount);
+    }
+    public Status validItemIndex(int index, int sellerIndex){
+        return ManageUtils.validateRange(index,sellersList[sellerIndex].getProductCount());
+    }
+    public Status validBuyerIndex(int index){
+        return ManageUtils.validateRange(index,this.buyerCount);
+    }
+    public Status validOrderIndex(int index, int buyerIndex){
+        return ManageUtils.validateRange(index,buyersList[buyerIndex].getOrderCount());
+    }
+    public Status validCartIndex(int index, int buyerIndex){
+        return ManageUtils.validateRange(index,buyersList[index].getCurrentCartProductCount());
+    }
 }
